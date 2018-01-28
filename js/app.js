@@ -30,21 +30,76 @@ var Card = function(name){
     this.name = name;
     this.isOpen = false;
     this.isMatch = false; 
+    this.onClick = function(){
+        this.open();
+    };
 }
 Card.prototype.open = function(){
-    
+    this.isOpen = true;
 }
 // 创建卡片集合
 var game = {
-    cars: [],
-    match: function(){
-        
+    cards: [],
+    init: function(cards){
+        this.cards = cards
+    },
+    match: function(card1, card2){
+        if(card1.name === card2.name){
+            return true
+        }else{
+            return false;
+        }
     },
     render: function(){
-
+        var elements = this.cards.map(function(item, index){
+            var isOpenClassName = '', isMatchClassName = ''; 
+            if(item.isOpen){
+                isOpenClassName = 'open show';
+            }
+            if(item.isMatch){
+                isMatchClassName = 'match';
+            }
+            return '<li data-index="'+ index +'" class="card '+ isMatchClassName +' '+ isOpenClassName +'"><i class="fa '+ item.name +'"></i></li>'
+        })
+        document.querySelector('.deck').innerHTML = elements.join('');
     }
-}
+};
 
+// 初始化
+(function(){
+    // 生成所有卡片
+    var allCars = shuffle(cars.concat(cars));
+    // 生成所有卡片对象
+    var allCarsObj = allCars.map(function(item){
+        return new Card(item);
+    })
+    // 初始化game
+    game.init(allCarsObj);
+    game.render();
+    // 添加事件监听器
+    $('.deck').on('click', '.card', function(e){
+        var index = this.dataset.index;
+        game.cards[index].open();
+        game.render();                               
+        // 判断是否有两个以上的为open状体啊的card 如果有就进行对比否者不做任何操作
+        var openCards = game.cards.filter(function(item){return item.isOpen});
+        if(openCards.length === 2){
+            if(openCards[0].name !== openCards[1].name){
+                openCards.map(function(item){ 
+                    return Object.assign(item, {isOpen: false});
+                })
+            }else{
+                openCards.map(function(item){ 
+                    return Object.assign(item, {isMatch: true, isOpen: false});
+                })
+            }
+        }
+        setTimeout(function(){    
+            // 如果超过打开超过两个则调用macth方法
+            game.render();
+        }, 500)    
+    })
+})()
 /*
  * 设置一张卡片的事件监听器。 如果该卡片被点击：
  *  - 显示卡片的符号（将这个功能放在你从这个函数中调用的另一个函数中）

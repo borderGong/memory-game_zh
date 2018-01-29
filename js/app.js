@@ -1,7 +1,7 @@
 /*
  * 创建一个包含所有卡片的数组
  */
-var cars = ['fa-diamond', 'fa-paper-plane-o', 'fa-anchor', 'fa-bolt', 'fa-cube', 'fa-leaf', 'fa-bicycle', 'fa-diamond'];
+var cars = ['fa-diamond', 'fa-paper-plane-o', 'fa-anchor', 'fa-bolt', 'fa-cube', 'fa-leaf', 'fa-bicycle', 'fa-bomb'];
 
 /*
  * 显示页面上的卡片
@@ -39,10 +39,23 @@ Card.prototype.open = function(){
 }
 // 创建卡片集合
 var game = {
+    // 游戏卡片
     cards: [],
-    init: function(cards){
-        this.cards = cards
+    // 移动次数
+    moves: 0,
+    // 初始化game对象
+    init: function(){
+        // 生成所有卡片
+        var allCars = shuffle(cars.concat(cars));
+        // 生成所有卡片对象
+        var allCarsObj = allCars.map(function(item){
+            return new Card(item);
+        });
+        this.moves = 0;
+        this.cards = allCarsObj;
+        this.render();
     },
+    // 匹配事件
     match: function(card1, card2){
         if(card1.name === card2.name){
             return true
@@ -62,42 +75,64 @@ var game = {
             return '<li data-index="'+ index +'" class="card '+ isMatchClassName +' '+ isOpenClassName +'"><i class="fa '+ item.name +'"></i></li>'
         })
         document.querySelector('.deck').innerHTML = elements.join('');
+        document.querySelector('.moves').innerHTML = this.moves;
+    },
+    renderSuccess: function(){
+        
     }
 };
 
 // 初始化
 (function(){
-    // 生成所有卡片
-    var allCars = shuffle(cars.concat(cars));
-    // 生成所有卡片对象
-    var allCarsObj = allCars.map(function(item){
-        return new Card(item);
-    })
     // 初始化game
-    game.init(allCarsObj);
-    game.render();
+    game.init();
     // 添加事件监听器
     $('.deck').on('click', '.card', function(e){
-        var index = this.dataset.index;
+        var that = this;
+        var index = that.dataset.index;
+        // 如果已经匹配过直接返回
+        if(game.cards[index].isMatch) return;  
         game.cards[index].open();
-        game.render();                               
+        // game.render(); 
+        $(that).addClass('open show');                              
         // 判断是否有两个以上的为open状体啊的card 如果有就进行对比否者不做任何操作
         var openCards = game.cards.filter(function(item){return item.isOpen});
+        var openCardsIndex = game.cards
+            .filter(function(item){
+                return item.isOpen
+            })
+            .map(function(item){ 
+                return game.cards.findIndex(function(_item){
+                    return item === _item;
+                });
+            });
         if(openCards.length === 2){
-            if(openCards[0].name !== openCards[1].name){
-                openCards.map(function(item){ 
-                    return Object.assign(item, {isOpen: false});
-                })
+            // 增加次数
+            game.moves++;                  
+            // 匹配            
+            if(!game.match(openCards[0],openCards[1])){
+                openCards.forEach(function(item){ 
+                    Object.assign(item, {isOpen: false});
+                });
+                $('.deck .card:eq('+ openCardsIndex[0] +'),.deck .card:eq('+ openCardsIndex[1] +')')
+                    .addClass('animated shake error')
+                    .one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function(){
+                        game.render();
+                    });
             }else{
                 openCards.map(function(item){ 
                     return Object.assign(item, {isMatch: true, isOpen: false});
                 })
+                $('.deck .card:eq('+ openCardsIndex[0] +'),.deck .card:eq('+ openCardsIndex[1] +')')
+                    .addClass('animated rubberBand match')
+                    .one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function(){
+                        game.render();
+                    });
             }
-        }
-        setTimeout(function(){    
-            // 如果超过打开超过两个则调用macth方法
-            game.render();
-        }, 500)    
+        }   
+    });
+    $('.restart').on('click', function(){
+        game.init();
     })
 })()
 /*

@@ -43,6 +43,10 @@ var game = {
     cards: [],
     // 移动次数
     moves: 0,
+    // 星星数量
+    star: 3,
+    // 游戏是否完成
+    isCompleted: false,
     // 初始化game对象
     init: function(){
         // 生成所有卡片
@@ -53,6 +57,7 @@ var game = {
         });
         this.moves = 0;
         this.cards = allCarsObj;
+        this.isCompleted = false;       
         this.render();
     },
     // 匹配事件
@@ -63,7 +68,38 @@ var game = {
             return false;
         }
     },
+    // 判断游戏是否完成
+    isGameComplete: function(){
+        var matchedCards = this.cards.filter(function(item){
+            return item.isMatch;
+        });
+        if(matchedCards.length === this.cards.length){
+            this.isCompleted = true;
+        }else{
+            this.isCompleted = false;
+        }
+    },
     render: function(){
+        var deckElement = document.querySelector('.deck');
+        var movesElement = document.querySelector('.moves');
+
+        // 移动次数
+        movesElement.innerHTML = this.moves;        
+        // 如果游戏已经结束
+        if(this.isCompleted){
+            var completeHtml = `<li>
+                <div class="icon-success">
+                    <i class="fa fa-check fa-3x"></i>                    
+                </div>
+                <p class="text-first">Congratulations! You Won!</p>
+                <p class="text-second">With ${this.moves} Moves and ${this.star} Starts</p>
+                <p class="text-second">Woooooo!</p>
+                <button class="button-restart">play again!</button>
+            </li>`;
+            $(deckElement).addClass('game-complete');
+            deckElement.innerHTML = completeHtml;
+            return;
+        }
         var elements = this.cards.map(function(item, index){
             var isOpenClassName = '', isMatchClassName = ''; 
             if(item.isOpen){
@@ -73,12 +109,9 @@ var game = {
                 isMatchClassName = 'match';
             }
             return '<li data-index="'+ index +'" class="card '+ isMatchClassName +' '+ isOpenClassName +'"><i class="fa '+ item.name +'"></i></li>'
-        })
-        document.querySelector('.deck').innerHTML = elements.join('');
-        document.querySelector('.moves').innerHTML = this.moves;
-    },
-    renderSuccess: function(){
-        
+        });
+        $(deckElement).removeClass('game-complete');        
+        deckElement.innerHTML = elements.join('');
     }
 };
 
@@ -87,6 +120,9 @@ var game = {
     // 初始化game
     game.init();
     // 添加事件监听器
+    $('.deck').on('click', '.button-restart', function(e){
+        game.init();
+    });
     $('.deck').on('click', '.card', function(e){
         var that = this;
         var index = that.dataset.index;
@@ -122,10 +158,11 @@ var game = {
             }else{
                 openCards.map(function(item){ 
                     return Object.assign(item, {isMatch: true, isOpen: false});
-                })
+                });
                 $('.deck .card:eq('+ openCardsIndex[0] +'),.deck .card:eq('+ openCardsIndex[1] +')')
                     .addClass('animated rubberBand match')
                     .one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function(){
+                        game.isGameComplete();
                         game.render();
                     });
             }

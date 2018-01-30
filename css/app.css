@@ -113,3 +113,49 @@ h1 {
     float: right;
     cursor: pointer;
 }
+
+/*
+ * Styles for the Game complete
+ */
+
+.game-complete {
+    justify-content: center;
+    background: #fff;
+}
+.game-complete li {
+    display: flex;
+    flex-direction: column;    
+    justify-content: center;
+    align-items: center;
+}
+.game-complete .icon-success {
+    margin-bottom: 20px;
+    width: 80px;
+    height: 80px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 100%;
+    border: 1px solid #dcdcdc;
+}
+.game-complete p {
+    margin: 10px 0;
+}
+.game-complete .text-first {
+    font-size: 30px;
+    color: #1b1b1b;
+}
+.game-complete .text-second {
+    color: #999;
+    text-align: center;
+}
+.game-complete .button-restart {
+    border: none;
+    width: 100px;
+    height: 30px;
+    border-radius: 5px;
+    text-align: center;
+    color: #fff;
+    background: #02ccba;
+    font-size: 16px;
+}

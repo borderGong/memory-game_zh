@@ -43,6 +43,8 @@ var game = {
     cards: [],
     // 移动次数
     moves: 0,
+    // 错误的移动次数
+    errorMoves: 0,
     // 星星数量
     star: 3,
     // 游戏是否完成
@@ -57,7 +59,8 @@ var game = {
         });
         this.moves = 0;
         this.cards = allCarsObj;
-        this.isCompleted = false;       
+        this.isCompleted = false;    
+        this.errorMoves = 0;   
         this.render();
     },
     // 匹配事件
@@ -79,12 +82,28 @@ var game = {
             this.isCompleted = false;
         }
     },
+    starData: function(){
+        if(this.errorMoves > 10){
+            return ['fa-star', 'fa-star-o', 'fa-star-o'];
+        }
+        if(this.errorMoves <= 10 && this.errorMoves > 5){
+            return ['fa-star', 'fa-star', 'fa-star-o'];
+        }
+        if(this.errorMoves <= 5){
+            return ['fa-star', 'fa-star', 'fa-star'];
+        }
+    },
     render: function(){
         var deckElement = document.querySelector('.deck');
         var movesElement = document.querySelector('.moves');
-
+        var starsElement = document.querySelector('.stars');
         // 移动次数
-        movesElement.innerHTML = this.moves;        
+        movesElement.innerHTML = this.moves; 
+        // 渲染星星
+        var stars = this.starData().map(function(item){
+            return '<li><i class="fa '+ item +'"></i></li>';
+        });
+        starsElement.innerHTML = stars.join('');
         // 如果游戏已经结束
         if(this.isCompleted){
             var completeHtml = `<li>
@@ -147,6 +166,7 @@ var game = {
             game.moves++;                  
             // 匹配            
             if(!game.match(openCards[0],openCards[1])){
+                game.errorMoves++;
                 openCards.forEach(function(item){ 
                     Object.assign(item, {isOpen: false});
                 });

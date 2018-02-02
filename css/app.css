@@ -159,3 +159,9 @@ h1 {
     background: #02ccba;
     font-size: 16px;
 }
+.time {
+    margin: 0;
+    width: 100px;
+    text-align: center;
+    font-size: 30px;
+}

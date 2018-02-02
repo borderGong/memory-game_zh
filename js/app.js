@@ -49,6 +49,8 @@ const game = {
     star: 3,
     // 游戏是否完成
     isCompleted: false,
+    // 游戏开始时间
+    startTime: null,
     // 初始化game对象
     init: function(){
         // 生成所有卡片
@@ -61,7 +63,9 @@ const game = {
         this.cards = allCarsObj;
         this.isCompleted = false;    
         this.errorMoves = 0;   
+        this.startTime = Date.now();
         this.render();
+        this.renderTime();
     },
     // 匹配事件
     match: function(card1, card2){
@@ -84,14 +88,26 @@ const game = {
     },
     starData: function(){
         if(this.errorMoves > 10){
+            this.star = 1;
             return ['fa-star', 'fa-star-o', 'fa-star-o'];
         }
         if(this.errorMoves <= 10 && this.errorMoves > 5){
+            this.star = 2;
             return ['fa-star', 'fa-star', 'fa-star-o'];
         }
         if(this.errorMoves <= 5){
+            this.star = 3;
             return ['fa-star', 'fa-star', 'fa-star'];
         }
+    },
+    // 计时
+    renderTime: function(){
+        if(this.isCompleted) return;
+        setTimeout(() => {
+            const timeNumber = Date.now() - this.startTime;
+            $('.time').text((timeNumber/1000).toFixed(3));
+            this.renderTime();
+        }, 100)
     },
     render: function(){
         var deckElement = document.querySelector('.deck');
@@ -111,7 +127,7 @@ const game = {
                     <i class="fa fa-check fa-3x"></i>                    
                 </div>
                 <p class="text-first">Congratulations! You Won!</p>
-                <p class="text-second">With ${this.moves} Moves and ${this.star} Starts</p>
+                <p class="text-second">With ${this.moves} Moves and ${this.star} Stars</p>
                 <p class="text-second">Woooooo!</p>
                 <button class="button-restart">play again!</button>
             </li>`;

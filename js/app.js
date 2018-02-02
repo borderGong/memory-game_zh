@@ -12,7 +12,7 @@ const cars = ['fa-diamond', 'fa-paper-plane-o', 'fa-anchor', 'fa-bolt', 'fa-cube
 
 // 洗牌函数来自于 http://stackoverflow.com/a/2450976
 function shuffle(array) {
-    var currentIndex = array.length, temporaryValue, randomIndex;
+    let currentIndex = array.length, temporaryValue, randomIndex;
 
     while (currentIndex !== 0) {
         randomIndex = Math.floor(Math.random() * currentIndex);
@@ -54,9 +54,9 @@ const game = {
     // 初始化game对象
     init: function(){
         // 生成所有卡片
-        var allCars = shuffle(cars.concat(cars));
+        const allCars = shuffle(cars.concat(cars));
         // 生成所有卡片对象
-        var allCarsObj = allCars.map(function(item){
+        const allCarsObj = allCars.map(function(item){
             return new Card(item);
         });
         this.moves = 0;
@@ -77,7 +77,7 @@ const game = {
     },
     // 判断游戏是否完成
     isGameComplete: function(){
-        var matchedCards = this.cards.filter(function(item){
+        const matchedCards = this.cards.filter(function(item){
             return item.isMatch;
         });
         if(matchedCards.length === this.cards.length){
@@ -110,19 +110,19 @@ const game = {
         }, 100)
     },
     render: function(){
-        var deckElement = document.querySelector('.deck');
-        var movesElement = document.querySelector('.moves');
-        var starsElement = document.querySelector('.stars');
+        const deckElement = document.querySelector('.deck');
+        const movesElement = document.querySelector('.moves');
+        const starsElement = document.querySelector('.stars');
         // 移动次数
         movesElement.innerHTML = this.moves; 
         // 渲染星星
-        var stars = this.starData().map(function(item){
+        const stars = this.starData().map(function(item){
             return '<li><i class="fa '+ item +'"></i></li>';
         });
         starsElement.innerHTML = stars.join('');
         // 如果游戏已经结束
         if(this.isCompleted){
-            var completeHtml = `<li>
+            const completeHtml = `<li>
                 <div class="icon-success">
                     <i class="fa fa-check fa-3x"></i>                    
                 </div>
@@ -135,8 +135,8 @@ const game = {
             deckElement.innerHTML = completeHtml;
             return;
         }
-        var elements = this.cards.map(function(item, index){
-            var isOpenClassName = '', isMatchClassName = ''; 
+        const elements = this.cards.map(function(item, index){
+            let isOpenClassName = '', isMatchClassName = ''; 
             if(item.isOpen){
                 isOpenClassName = 'open show';
             }
@@ -159,18 +159,18 @@ const game = {
         game.init();
     });
     $('.deck').on('click', '.card', function(e){
-        var that = this;
-        var index = that.dataset.index;
+        const that = this;
+        const index = that.dataset.index;
         // 如果已经匹配过直接返回
         if(game.cards[index].isMatch) return;  
         game.cards[index].open();
         // game.render(); 
         $(that).addClass('open show');                              
         // 判断是否有两个以上的为open状体啊的card 如果有就进行对比否者不做任何操作
-        var openCards = game.cards.filter(function(item){
+        const openCards = game.cards.filter(function(item){
             return item.isOpen;
         });
-        var openCardsIndex = game.cards.filter(function(item){
+        const openCardsIndex = game.cards.filter(function(item){
                 return item.isOpen
             })
             .map(function(item){ 

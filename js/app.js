@@ -1,7 +1,7 @@
 /*
  * 创建一个包含所有卡片的数组
  */
-var cars = ['fa-diamond', 'fa-paper-plane-o', 'fa-anchor', 'fa-bolt', 'fa-cube', 'fa-leaf', 'fa-bicycle', 'fa-bomb'];
+const cars = ['fa-diamond', 'fa-paper-plane-o', 'fa-anchor', 'fa-bolt', 'fa-cube', 'fa-leaf', 'fa-bicycle', 'fa-bomb'];
 
 /*
  * 显示页面上的卡片
@@ -26,19 +26,19 @@ function shuffle(array) {
 }
 
 // 创建每个卡片的对象
-var Card = function(name){
+const Card = function(name){
     this.name = name;
     this.isOpen = false;
     this.isMatch = false; 
     this.onClick = function(){
         this.open();
     };
-}
+};
 Card.prototype.open = function(){
     this.isOpen = true;
-}
+};
 // 创建卡片集合
-var game = {
+const game = {
     // 游戏卡片
     cards: [],
     // 移动次数
@@ -66,7 +66,7 @@ var game = {
     // 匹配事件
     match: function(card1, card2){
         if(card1.name === card2.name){
-            return true
+            return true;
         }else{
             return false;
         }
@@ -127,7 +127,7 @@ var game = {
             if(item.isMatch){
                 isMatchClassName = 'match';
             }
-            return '<li data-index="'+ index +'" class="card '+ isMatchClassName +' '+ isOpenClassName +'"><i class="fa '+ item.name +'"></i></li>'
+            return '<li data-index="'+ index +'" class="card '+ isMatchClassName +' '+ isOpenClassName +'"><i class="fa '+ item.name +'"></i></li>';
         });
         $(deckElement).removeClass('game-complete');        
         deckElement.innerHTML = elements.join('');
@@ -151,9 +151,10 @@ var game = {
         // game.render(); 
         $(that).addClass('open show');                              
         // 判断是否有两个以上的为open状体啊的card 如果有就进行对比否者不做任何操作
-        var openCards = game.cards.filter(function(item){return item.isOpen});
-        var openCardsIndex = game.cards
-            .filter(function(item){
+        var openCards = game.cards.filter(function(item){
+            return item.isOpen;
+        });
+        var openCardsIndex = game.cards.filter(function(item){
                 return item.isOpen
             })
             .map(function(item){ 
@@ -190,8 +191,8 @@ var game = {
     });
     $('.restart').on('click', function(){
         game.init();
-    })
-})()
+    });
+})();
 /*
  * 设置一张卡片的事件监听器。 如果该卡片被点击：
  *  - 显示卡片的符号（将这个功能放在你从这个函数中调用的另一个函数中）
